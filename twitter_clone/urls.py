@@ -15,7 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+# to import static files and media files
+from django.conf import settings
+from django.conf.urls.static import static
+# model views
+from post import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.homepage, name='homepage'),
+    path('create', views.create_tweet, name='tweet'),
+    path('edit/<int:tweet_id>', views.create_tweet, name='edit-tweet'),
 ]
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
