@@ -23,9 +23,20 @@ from post import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # auth urls
+    path('signup/',views.signup ,name='signup'),
+    path('signin/',views.signin ,name='signin'),
+    path('signout/',views.signout ,name='signout'),
+
+    # basic urls
     path('', views.homepage, name='homepage'),
-    path('create', views.create_tweet, name='tweet'),
-    path('edit/<int:tweet_id>', views.create_tweet, name='edit-tweet'),
+    path('404/', views.not_found, name='404'),
+
+    # post urls
+    path('posts/feed', views.post_list, name='feed'),
+    path('posts/create', views.post_create, name='post_create'),
+    path('posts/edit/<int:post_id>', views.post_edit, name='post_edit'),
+    path('posts/delete/<int:post_id>', views.post_delete, name='post_delete'),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

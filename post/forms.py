@@ -18,10 +18,10 @@ class LoginForm(forms.Form):
     password = forms.CharField(required=True, widget=forms.PasswordInput())
 
 #####################################################################################################
-#       Tweet Forms                                                                                 #
+#       Post Forms                                                                                  #
 #####################################################################################################
 
-class TweetCreateForm(forms.ModelForm):
+class PostCreateForm(forms.ModelForm):
     class Meta:
         model = Post
         exclude = ["auther"]

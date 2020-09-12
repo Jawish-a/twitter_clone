@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import LoginForm, RegisterForm, TweetCreateForm
+from .forms import LoginForm, RegisterForm, PostCreateForm
 from django.contrib.auth import login, authenticate, logout
 from .models import Post
 
@@ -7,45 +7,45 @@ from .models import Post
 #        auth links                                                                                 #
 #####################################################################################################
 
-def register(request):
+def signup(request):
     form = RegisterForm()
-    if request.method == "POST":
+    if request.method == 'POST':
         form = RegisterForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             user = form.save(commit=False)
             user.set_password(user.password)
             user.save()
             login(request, user)
-            # redirect the user to the homepage after successful register
-            return redirect('homepage')
+            return redirect("feed")
     context = {
-        "form": form,
+        "form":form,
     }
-    return render(request, 'register.html', context)
+    return render(request, 'signup.html', context)
 
-def login(request):
+def signin(request):
     form = LoginForm()
-    if request.method == "POST":
-        form = RegisterForm(request.POST)
-        if form.is_valid:
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+
             auth_user = authenticate(username=username, password=password)
             if auth_user is not None:
                 login(request, auth_user)
-                # redirect the user to the homepage after successful login
-                return redirect('homepage')
+                return redirect('feed')
     context = {
-        "form": form,
+        "form":form
     }
-    return render(request, 'login.html', context)
+    return render(request, 'signin.html', context)
 
 def signout(request):
     logout(request)
-    return redirect("login")
+    return redirect("signin")
 
 #####################################################################################################
-#       tweets model links                                                                          #
+#       base links                                                                                  #
 #####################################################################################################
 
 def homepage(request):
@@ -55,34 +55,50 @@ def homepage(request):
     }
     return render(request, 'homepage.html', context)
 
-def create_tweet(request):
-    form = TweetCreateForm()
+def not_found(request):
+    return render(request, '404.html')
+
+
+#####################################################################################################
+#       psot model links                                                                           #
+#####################################################################################################
+
+def post_list(request):
+    posts = Post.objects.all()
+    context = {
+        "posts": posts
+    }
+    return render(request, 'post_list.html', context)
+
+def post_create(request):
+    form = PostCreateForm()
     if request.method == "POST":
-        form = TweetCreateForm(request.POST)
+        form = PostCreateForm(request.POST)
         if form.is_valid:
-            form.save(commit=False)
-            form.auther = request.user
-            form.save()
-            return redirect('homepage')
+            post = form.save(commit=False)
+            post.auther = request.user
+            post.save()
+            return redirect('feed')
     context = {
         "form": form
     }
-    return redirect('homepage')
+    return redirect('feed')
 
-def edit_tweet(request, tweet_id):
-    form = TweetCreateForm()
-    post_obj = Post.objects.get(id=tweet_id)
+def post_edit(request, post_id):
+    form = PostCreateForm()
+    post_obj = Post.objects.get(id=post_id)
     if request.method == "POST":
-        form = TweetCreateForm(request.POST, instance=post_obj)
+        form = PostCreateForm(request.POST, instance=post_obj)
         if form.is_valid:
             form.save()
-            return redirect('homepage')
+            return redirect('feed')
     context = {
         "form": form
     }
-    return redirect('homepage')
+    return redirect('feed')
 
-def delete_tweet(request, tweet_id):
-    post_obj = Post.objects.get(id=tweet_id)
+def post_delete(request, post_id):
+    post_obj = Post.objects.get(id=post_id)
     post_obj.delete()
-    return redirect('homepage')
+    return redirect('feed')
+
